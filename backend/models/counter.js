@@ -1,5 +1,7 @@
 const mongoose=require('mongoose');
 
-const Counter=new mongoose.Schema({
-
+const counterSchema=new mongoose.Schema({
+    count:Number,
 })
+const CounterModel=mongoose.model("Counter",counterSchema)
+module.exports=CounterModel;
