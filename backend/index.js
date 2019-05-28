@@ -13,13 +13,30 @@ app.use( function ( req, res, next ) {// para prevenir el cors error
     res.header( 'Access-Control-Allow-Methods', 'POST, GET, PUT, DELETE, OPTIONS, PATCH' );
     next();
 } );
+app.get( '/all', ( req, res ) => {
+    CounterModel.find({}).then(counters=>res.send(counters))
+    .catch(err=>res.status(500).send(err))
+})
+
 
 app.get( '/addCounter/:count', ( req, res ) => {
-    console.log(req.params)
-    count=req.params.count
+    count=req.params.count;
     new CounterModel( {
-        count:count,
-    } ).save().then( counter => res.send( { counter, "info": "Counter successfully created" } ) )
-} )
+        count,
+    } ).save()
+    .then( counter => res.status(201).send(  counter ) )
+    .catch(err=>res.status(500).send(err));
+} );
+
+app.get('/increment/:id',(req,res)=>{
+    CounterModel.findById(req.params.id).then(counter=>{
+        counter.count=counter.count+1
+        CounterModel.findByIdAndUpdate(counter._id,{count:counter.count},{new:true,useFindAndModify:false})
+        .then(counter=>res.status(200).send(counter))
+    })
+    .catch(console.log)
+})
+
+//TODO ADD DECREMENT ENDPOINT 
 
 app.listen( 3001 )
